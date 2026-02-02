@@ -61,17 +61,27 @@ function printLines() {
 
 function download() {
   let p = 0;
+  const totalBars = 20; // lunghezza della barra
   const interval = setInterval(() => {
+    // calcola quante barre piene
+    const filledBars = Math.floor((p / 100) * totalBars);
+    const emptyBars = totalBars - filledBars;
+    const bar = "█".repeat(filledBars) + "░".repeat(emptyBars);
+
+    // scrive la barra e la percentuale
     terminal.textContent =
       terminal.textContent.replace(/Downloading.*\n?/g, "") +
-      `Downloading data package... ${p}%\n`;
+      `Downloading: [${bar}] ${p}%\n`;
+
     p++;
+
     if (p > 100) {
       clearInterval(interval);
       terminal.textContent += "Download complete.\nSystem ready.";
     }
-  }, 40);
+  }, 50); // regola velocità animazione
 }
+
 
 printLines();
 </script>
