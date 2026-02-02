@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Terminal</title>
+  <title>Terminale Notion</title>
   <style>
     body {
       margin: 0;
@@ -15,6 +15,16 @@
       padding: 20px;
       white-space: pre-wrap;
     }
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      background-color: #00ff99;
+      animation: blink 1s steps(1) infinite;
+      vertical-align: bottom;
+    }
+    @keyframes blink {
+      50% { background-color: transparent; }
+    }
   </style>
 </head>
 <body>
@@ -24,6 +34,7 @@
 <script>
 const terminal = document.getElementById("terminal");
 
+// --- LINEE PRE-DEFINITE ---
 const lines = [
   "Initializing system...",
   "Loading core modules...",
@@ -33,8 +44,7 @@ const lines = [
   "Downloading data package..."
 ];
 
-let line = 0;
-
+// --- FUNZIONE PER STAMPARE UNA LINEA CARATTERE PER CARATTERE ---
 function typeLine(text, callback) {
   let i = 0;
   const interval = setInterval(() => {
@@ -48,6 +58,8 @@ function typeLine(text, callback) {
   }, 30);
 }
 
+// --- STAMPARE TUTTE LE LINEE ---
+let line = 0;
 function printLines() {
   if (line < lines.length) {
     typeLine(lines[line], () => {
@@ -59,31 +71,34 @@ function printLines() {
   }
 }
 
+// --- DOWNLOAD CON BARRA GRAFICA ---
 function download() {
   let p = 0;
-  const totalBars = 20; // lunghezza della barra
+  const totalBars = 20;
   const interval = setInterval(() => {
-    // calcola quante barre piene
     const filledBars = Math.floor((p / 100) * totalBars);
     const emptyBars = totalBars - filledBars;
     const bar = "█".repeat(filledBars) + "░".repeat(emptyBars);
 
-    // scrive la barra e la percentuale
     terminal.textContent =
       terminal.textContent.replace(/Downloading.*\n?/g, "") +
       `Downloading: [${bar}] ${p}%\n`;
 
     p++;
-
     if (p > 100) {
       clearInterval(interval);
       terminal.textContent += "Download complete.\nSystem ready.";
     }
-  }, 50); // regola velocità animazione
+  }, 50);
 }
 
-
-printLines();
+// --- BLOCCO DEL REPLAY CON LOCALSTORAGE ---
+if (localStorage.getItem("terminalDone")) {
+  terminal.textContent = "Download complete.\nSystem ready.";
+} else {
+  localStorage.setItem("terminalDone", "true");
+  printLines();
+}
 </script>
 
 </body>
