@@ -40,9 +40,13 @@ function typeLine(text, callback) {
   const interval = setInterval(() => {
     terminal.textContent += text[i];
     i++;
+    // salva progressivamente tutto il testo
+    localStorage.setItem("terminalContent", terminal.textContent);
+
     if (i >= text.length) {
       clearInterval(interval);
       terminal.textContent += "\n";
+      localStorage.setItem("terminalContent", terminal.textContent);
       if (callback) callback();
     }
   }, 30);
@@ -70,15 +74,17 @@ function download() {
     const emptyBars = totalBars - filledBars;
     const bar = "█".repeat(filledBars) + "░".repeat(emptyBars);
 
-    terminal.textContent =
-      terminal.textContent.replace(/Downloading.*\n?/g, "") +
-      `Downloading: [${bar}] ${percent}%\n`;
+    // mantieni tutto il testo precedente + barra
+    let previousLines = terminal.textContent.replace(/Downloading.*\n?/g, "");
+    terminal.textContent = previousLines + `Downloading: [${bar}] ${percent}%\n`;
+
+    // salva progressivamente tutto il testo
+    localStorage.setItem("terminalContent", terminal.textContent);
 
     percent++;
     if (percent > 100) {
       clearInterval(interval);
       terminal.textContent += "Download complete.\nSystem ready.";
-      // --- SALVA L’INTERO TESTO DEL TERMINALE ---
       localStorage.setItem("terminalContent", terminal.textContent);
     }
   }, 50);
