@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Terminale Notion</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      color: #00ff99;
-      font-family: "Courier New", monospace;
-      font-size: 14px;
-    }
-    #terminal {
-      padding: 20px;
-      white-space: pre-wrap;
-    }
-    .cursor {
-      display: inline-block;
-      width: 10px;
-      background-color: #00ff99;
-      animation: blink 1s steps(1) infinite;
-      vertical-align: bottom;
-    }
-    @keyframes blink {
-      50% { background-color: transparent; }
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Terminale Notion</title>
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: #00ff99;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+#terminal {
+  padding: 20px;
+  white-space: pre-wrap;
+}
+</style>
 </head>
 <body>
 
@@ -53,17 +43,17 @@ function typeLine(text, callback) {
     if (i >= text.length) {
       clearInterval(interval);
       terminal.textContent += "\n";
-      callback && callback();
+      if (callback) callback();
     }
   }, 30);
 }
 
 // --- STAMPARE TUTTE LE LINEE ---
-let line = 0;
+let lineIndex = 0;
 function printLines() {
-  if (line < lines.length) {
-    typeLine(lines[line], () => {
-      line++;
+  if (lineIndex < lines.length) {
+    typeLine(lines[lineIndex], () => {
+      lineIndex++;
       setTimeout(printLines, 400);
     });
   } else {
@@ -73,19 +63,19 @@ function printLines() {
 
 // --- DOWNLOAD CON BARRA GRAFICA ---
 function download() {
-  let p = 0;
+  let percent = 0;
   const totalBars = 20;
   const interval = setInterval(() => {
-    const filledBars = Math.floor((p / 100) * totalBars);
+    const filledBars = Math.floor((percent / 100) * totalBars);
     const emptyBars = totalBars - filledBars;
     const bar = "█".repeat(filledBars) + "░".repeat(emptyBars);
 
     terminal.textContent =
       terminal.textContent.replace(/Downloading.*\n?/g, "") +
-      `Downloading: [${bar}] ${p}%\n`;
+      `Downloading: [${bar}] ${percent}%\n`;
 
-    p++;
-    if (p > 100) {
+    percent++;
+    if (percent > 100) {
       clearInterval(interval);
       terminal.textContent += "Download complete.\nSystem ready.";
     }
@@ -93,11 +83,12 @@ function download() {
 }
 
 // --- BLOCCO DEL REPLAY CON LOCALSTORAGE ---
-if (localStorage.getItem("terminalDone")) {
-  terminal.textContent = "Download complete.\nSystem ready.";
-} else {
+if (!localStorage.getItem("terminalDone")) {
   localStorage.setItem("terminalDone", "true");
-  printLines();
+  printLines(); // avvia l'animazione SOLO la prima volta
+} else {
+  // Mostra subito stato finale
+  terminal.textContent = "Download complete.\nSystem ready.";
 }
 </script>
 
