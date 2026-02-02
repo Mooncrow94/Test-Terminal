@@ -78,17 +78,18 @@ function download() {
     if (percent > 100) {
       clearInterval(interval);
       terminal.textContent += "Download complete.\nSystem ready.";
+      // --- SALVA L’INTERO TESTO DEL TERMINALE ---
+      localStorage.setItem("terminalContent", terminal.textContent);
     }
   }, 50);
 }
 
-// --- BLOCCO DEL REPLAY CON LOCALSTORAGE ---
-if (!localStorage.getItem("terminalDone")) {
-  localStorage.setItem("terminalDone", "true");
-  printLines(); // avvia l'animazione SOLO la prima volta
+// --- BLOCCO DEL REPLAY CON CONTENUTO COMPLETO ---
+const saved = localStorage.getItem("terminalContent");
+if (saved) {
+  terminal.textContent = saved; // mostra tutto il terminale completo
 } else {
-  // Mostra subito stato finale
-  terminal.textContent = "Download complete.\nSystem ready.";
+  printLines(); // avvia animazione
 }
 </script>
 
