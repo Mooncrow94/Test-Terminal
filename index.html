@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Terminal</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: #00ff99;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+    }
+    #terminal {
+      padding: 20px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<div id="terminal"></div>
+
+<script>
+const terminal = document.getElementById("terminal");
+
+const lines = [
+  "Initializing system...",
+  "Loading core modules...",
+  "Establishing secure connection...",
+  "Connection established.",
+  "",
+  "Downloading data package..."
+];
+
+let line = 0;
+
+function typeLine(text, callback) {
+  let i = 0;
+  const interval = setInterval(() => {
+    terminal.textContent += text[i];
+    i++;
+    if (i >= text.length) {
+      clearInterval(interval);
+      terminal.textContent += "\n";
+      callback && callback();
+    }
+  }, 30);
+}
+
+function printLines() {
+  if (line < lines.length) {
+    typeLine(lines[line], () => {
+      line++;
+      setTimeout(printLines, 400);
+    });
+  } else {
+    download();
+  }
+}
+
+function download() {
+  let p = 0;
+  const interval = setInterval(() => {
+    terminal.textContent =
+      terminal.textContent.replace(/Downloading.*\n?/g, "") +
+      `Downloading data package... ${p}%\n`;
+    p++;
+    if (p > 100) {
+      clearInterval(interval);
+      terminal.textContent += "Download complete.\nSystem ready.";
+    }
+  }, 40);
+}
+
+printLines();
+</script>
+
+</body>
+</html>
