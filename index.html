@@ -15,6 +15,17 @@ body {
   padding: 20px;
   white-space: pre-wrap;
 }
+/* Cursore lampeggiante */
+.cursor {
+  display: inline-block;
+  width: 10px;
+  background-color: #00ff99;
+  animation: blink 1s steps(1) infinite;
+  vertical-align: bottom;
+}
+@keyframes blink {
+  50% { background-color: transparent; }
+}
 </style>
 </head>
 <body>
@@ -40,13 +51,9 @@ function typeLine(text, callback) {
   const interval = setInterval(() => {
     terminal.textContent += text[i];
     i++;
-    // salva progressivamente tutto il testo
-    localStorage.setItem("terminalContent", terminal.textContent);
-
     if (i >= text.length) {
       clearInterval(interval);
       terminal.textContent += "\n";
-      localStorage.setItem("terminalContent", terminal.textContent);
       if (callback) callback();
     }
   }, 30);
@@ -74,29 +81,24 @@ function download() {
     const emptyBars = totalBars - filledBars;
     const bar = "█".repeat(filledBars) + "░".repeat(emptyBars);
 
-    // mantieni tutto il testo precedente + barra
     let previousLines = terminal.textContent.replace(/Downloading.*\n?/g, "");
     terminal.textContent = previousLines + `Downloading: [${bar}] ${percent}%\n`;
-
-    // salva progressivamente tutto il testo
-    localStorage.setItem("terminalContent", terminal.textContent);
 
     percent++;
     if (percent > 100) {
       clearInterval(interval);
       terminal.textContent += "Download complete.\nSystem ready.";
-      localStorage.setItem("terminalContent", terminal.textContent);
+
+      // aggiungi cursore lampeggiante alla fine
+      const cursor = document.createElement("span");
+      cursor.className = "cursor";
+      terminal.appendChild(cursor);
     }
   }, 50);
 }
 
-// --- BLOCCO DEL REPLAY CON CONTENUTO COMPLETO ---
-const saved = localStorage.getItem("terminalContent");
-if (saved) {
-  terminal.textContent = saved; // mostra tutto il terminale completo
-} else {
-  printLines(); // avvia animazione
-}
+// --- AVVIA ANIMAZIONE ---
+printLines();
 </script>
 
 </body>
