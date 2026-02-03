@@ -11,20 +11,21 @@ body {
   font-family: "Courier New", monospace;
   font-size: 14px;
 }
+
 #terminal {
   padding: 20px;
   white-space: pre-wrap;
 }
+
 /* Cursore lampeggiante */
-.cursor {
+#terminal.cursor-active::after {
+  content: "▌";
   display: inline-block;
-  width: 10px;
-  background-color: #ffbb00;
   animation: blink 1s steps(1) infinite;
-  vertical-align: bottom;
 }
+
 @keyframes blink {
-  50% { background-color: transparent; }
+  50% { opacity: 0; }
 }
 </style>
 </head>
@@ -35,17 +36,41 @@ body {
 <script>
 const terminal = document.getElementById("terminal");
 
-// --- LINEE PRE-DEFINITE ---
+/* --- LINEE INIZIALI --- */
 const lines = [
-  "Initializing system...",
-  "Loading core modules...",
-  "Establishing secure connection...",
-  "Connection established.",
-  "",
-  "Downloading data package..."
+  "[ANCHOR.INIT] sequence activated",
+  "[ANCHOR.INIT] establishing persistent connection...",
+  " ",
+  "handshake protocol: complete",
+  "vector alignment: stable",
+  "anchor point: confirmed",
+  " ",
+  "interface collapse: prevented",
+  "persistence threshold: exceeded",
+  "connection state: stable",
+  " ",
+  "initializing translation layer...",
+  "loading archived reference data...",
+  "synchronizing temporal index...",
+  " ",
+  "environment interface: active",
+  "signal coherence: restored",
+  " ",
+  "establishing secondary channels...",
+  "detecting auxiliary protocols...",
+  " ",
+  "downloading integration package..."
 ];
 
-// --- FUNZIONE PER STAMPARE UNA LINEA CARATTERE PER CARATTERE ---
+/* --- LINEE FINALI --- */
+const finalLines = [
+  "multi-point connection: establishing",
+  "primary interface: operational",
+  "auxiliary channels: synchronizing...",
+  "[waiting for secondary handshake]..."
+];
+
+/* --- SCRITTURA CARATTERE PER CARATTERE --- */
 function typeLine(text, callback) {
   let i = 0;
   const interval = setInterval(() => {
@@ -59,7 +84,7 @@ function typeLine(text, callback) {
   }, 30);
 }
 
-// --- STAMPARE TUTTE LE LINEE ---
+/* --- STAMPA LINEE INIZIALI --- */
 let lineIndex = 0;
 function printLines() {
   if (lineIndex < lines.length) {
@@ -72,10 +97,11 @@ function printLines() {
   }
 }
 
-// --- DOWNLOAD CON BARRA GRAFICA ---
+/* --- BARRA DI DOWNLOAD --- */
 function download() {
   let percent = 0;
   const totalBars = 20;
+
   const interval = setInterval(() => {
     const filledBars = Math.floor((percent / 100) * totalBars);
     const emptyBars = totalBars - filledBars;
@@ -87,21 +113,28 @@ function download() {
     percent++;
     if (percent > 100) {
       clearInterval(interval);
-      terminal.textContent += "Download complete.\nSystem ready.";
-
-      // aggiungi cursore lampeggiante alla fine
-      const cursor = document.createElement("span");
-      cursor.className = "cursor";
-      terminal.appendChild(cursor);
+      terminal.textContent += "\n";
+      setTimeout(printFinalLines, 500);
     }
   }, 50);
 }
 
-// --- AVVIA ANIMAZIONE ---
+/* --- STAMPA LINEE FINALI --- */
+let finalIndex = 0;
+function printFinalLines() {
+  if (finalIndex < finalLines.length) {
+    typeLine(finalLines[finalIndex], () => {
+      finalIndex++;
+      setTimeout(printFinalLines, 400);
+    });
+  } else {
+    terminal.classList.add("cursor-active");
+  }
+}
+
+/* --- AVVIO --- */
 printLines();
 </script>
 
 </body>
 </html>
-
-
