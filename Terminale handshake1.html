@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Terminale Notion</title>
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: #ffbb00;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+
+#terminal {
+  padding: 20px;
+  white-space: pre-wrap;
+}
+
+/* Cursore lampeggiante */
+#terminal.cursor-active::after {
+  content: "▌";
+  display: inline-block;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div id="terminal"></div>
+
+<script>
+const terminal = document.getElementById("terminal");
+
+/* --- LINEE INIZIALI --- */
+const lines = [
+  "[ANCHOR.INIT] sequence activated",
+  "[ANCHOR.INIT] establishing persistent connection...",
+  " ",
+  "handshake protocol: complete",
+  "vector alignment: stable",
+  "anchor point: confirmed",
+  " ",
+  "interface collapse: prevented",
+  "persistence threshold: exceeded",
+  "connection state: stable",
+  " ",
+  "initializing translation layer...",
+  "loading archived reference data...",
+  "synchronizing temporal index...",
+  " ",
+  "environment interface: active",
+  "signal coherence: restored",
+  " ",
+  "establishing secondary channels...",
+  "detecting auxiliary protocols...",
+  " ",
+  "downloading integration package..."
+];
+
+/* --- LINEE FINALI --- */
+const finalLines = [
+  "multi-point connection: establishing",
+  "primary interface: operational",
+  "auxiliary channels: synchronizing...",
+  "[waiting for secondary handshake]..."
+];
+
+/* --- SCRITTURA CARATTERE PER CARATTERE --- */
+function typeLine(text, callback) {
+  let i = 0;
+  const interval = setInterval(() => {
+    terminal.textContent += text[i];
+    i++;
+    if (i >= text.length) {
+      clearInterval(interval);
+      terminal.textContent += "\n";
+      if (callback) callback();
+    }
+  }, 30);
+}
+
+/* --- STAMPA LINEE INIZIALI --- */
+let lineIndex = 0;
+function printLines() {
+  if (lineIndex < lines.length) {
+    typeLine(lines[lineIndex], () => {
+      lineIndex++;
+      setTimeout(printLines, 400);
+    });
+  } else {
+    download();
+  }
+}
+
+/* --- BARRA DI DOWNLOAD --- */
+function download() {
+  let percent = 0;
+  const totalBars = 20;
+
+  const interval = setInterval(() => {
+    const filledBars = Math.floor((percent / 100) * totalBars);
+    const emptyBars = totalBars - filledBars;
+    const bar = "█".repeat(filledBars) + "░".repeat(emptyBars);
+
+    let previousLines = terminal.textContent.replace(/Downloading.*\n?/g, "");
+    terminal.textContent = previousLines + `Downloading: [${bar}] ${percent}%\n`;
+
+    percent++;
+    if (percent > 100) {
+      clearInterval(interval);
+      terminal.textContent += "\n";
+      setTimeout(printFinalLines, 500);
+    }
+  }, 50);
+}
+
+/* --- STAMPA LINEE FINALI --- */
+let finalIndex = 0;
+function printFinalLines() {
+  if (finalIndex < finalLines.length) {
+    typeLine(finalLines[finalIndex], () => {
+      finalIndex++;
+      setTimeout(printFinalLines, 400);
+    });
+  } else {
+    terminal.classList.add("cursor-active");
+  }
+}
+
+/* --- AVVIO --- */
+printLines();
+</script>
+
+</body>
+</html>
