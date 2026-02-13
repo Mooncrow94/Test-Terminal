@@ -4,29 +4,33 @@
 <meta charset="UTF-8">
 <title>Terminale Notion</title>
 <style>
-body {
-  margin: 0;
-  background: black;
-  color: #ffbb00;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-}
+  body {
+    margin: 0;
+    background: black;
+    color: #ffbb00;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+  }
 
-#terminal {
-  padding: 20px;
-  white-space: pre-wrap;
-}
+  #terminal {
+    padding: 20px;
+    white-space: pre-wrap;
+  }
 
-/* Cursore lampeggiante */
-#terminal.cursor-active::after {
-  content: "▌";
-  display: inline-block;
-  animation: blink 1s steps(1) infinite;
-}
+  /* Solo il testo finale e il cursore saranno verdi */
+  .new-status {
+    color: #00ff41;
+  }
 
-@keyframes blink {
-  50% { opacity: 0; }
-}
+  .cursor-active::after {
+    content: "▌";
+    display: inline-block;
+    animation: blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
 </style>
 </head>
 <body>
@@ -36,104 +40,86 @@ body {
 <script>
 const terminal = document.getElementById("terminal");
 
-/* --- LINEE INIZIALI --- */
-const lines = [
-  "[ANCHOR.INIT] sequence activated",
-  "[ANCHOR.INIT] establishing persistent connection...",
-  " ",
-  "handshake protocol: complete",
-  "vector alignment: stable",
-  "anchor point: confirmed",
-  " ",
-  "interface collapse: prevented",
-  "persistence threshold: exceeded",
-  "connection state: stable",
-  " ",
-  "initializing translation layer...",
-  "loading archived reference data...",
-  "synchronizing temporal index...",
-  " ",
-  "environment interface: active",
-  "signal coherence: restored",
-  " ",
-  "establishing secondary channels...",
-  "detecting auxiliary protocols...",
-  " ",
-  "downloading integration package..."
+// Blocco statico: include tutto il testo precedente e la barra già al 100%
+const staticContent = `[ANCHOR.INIT] sequence activated
+[ANCHOR.INIT] establishing persistent connection...
+ 
+handshake protocol: complete
+vector alignment: stable
+anchor point: confirmed
+ 
+interface collapse: prevented
+persistence threshold: exceeded
+connection state: stable
+ 
+initializing translation layer...
+loading archived reference data...
+synchronizing temporal index...
+ 
+environment interface: active
+signal coherence: restored
+ 
+establishing secondary channels...
+detecting auxiliary protocols...
+ 
+downloading integration package...
+Downloading: [████████████████████] 100%
+
+multi-point connection: establishing
+primary interface: operational
+auxiliary channels: synchronizing...
+[waiting for secondary handshake]...
+
+
+`;
+
+const newLines = [
+  "secondary handshake: COMPLETE",
+  "auxiliary interface: confirmed",
+  "multi-point connection: established",
+  "system: fully operational"
 ];
 
-/* --- LINEE FINALI --- */
-const finalLines = [
-  "multi-point connection: establishing",
-  "primary interface: operational",
-  "auxiliary channels: synchronizing...",
-  "[waiting for secondary handshake]..."
-];
-
-/* --- SCRITTURA CARATTERE PER CARATTERE --- */
-function typeLine(text, callback) {
+function typeLine(text, container, callback) {
   let i = 0;
   const interval = setInterval(() => {
-    terminal.textContent += text[i];
+    container.textContent += text[i];
     i++;
     if (i >= text.length) {
       clearInterval(interval);
-      terminal.textContent += "\n";
+      container.textContent += "\n";
       if (callback) callback();
     }
   }, 30);
 }
 
-/* --- STAMPA LINEE INIZIALI --- */
 let lineIndex = 0;
-function printLines() {
-  if (lineIndex < lines.length) {
-    typeLine(lines[lineIndex], () => {
-      lineIndex++;
-      setTimeout(printLines, 400);
-    });
-  } else {
-    download();
-  }
-}
+function startSequence() {
+  // 1. Stampiamo subito il testo arancione
+  terminal.textContent = staticContent;
 
-/* --- BARRA DI DOWNLOAD --- */
-function download() {
-  let percent = 0;
-  const totalBars = 20;
+  // 2. Creiamo il contenitore per il testo verde
+  const statusSpan = document.createElement("span");
+  statusSpan.className = "new-status";
+  terminal.appendChild(statusSpan);
 
-  const interval = setInterval(() => {
-    const filledBars = Math.floor((percent / 100) * totalBars);
-    const emptyBars = totalBars - filledBars;
-    const bar = "█".repeat(filledBars) + "░".repeat(emptyBars);
-
-    let previousLines = terminal.textContent.replace(/Downloading.*\n?/g, "");
-    terminal.textContent = previousLines + `Downloading: [${bar}] ${percent}%\n`;
-
-    percent++;
-    if (percent > 100) {
-      clearInterval(interval);
-      terminal.textContent += "\n";
-      setTimeout(printFinalLines, 500);
+  // 3. Funzione ricorsiva per il typing delle nuove linee
+  function printNext() {
+    if (lineIndex < newLines.length) {
+      typeLine(newLines[lineIndex], statusSpan, () => {
+        lineIndex++;
+        setTimeout(printNext, 400);
+      });
+    } else {
+      statusSpan.classList.add("cursor-active");
     }
-  }, 50);
-}
-
-/* --- STAMPA LINEE FINALI --- */
-let finalIndex = 0;
-function printFinalLines() {
-  if (finalIndex < finalLines.length) {
-    typeLine(finalLines[finalIndex], () => {
-      finalIndex++;
-      setTimeout(printFinalLines, 400);
-    });
-  } else {
-    terminal.classList.add("cursor-active");
   }
+
+  // Avvio del typing dopo un piccolo ritardo visivo
+  setTimeout(printNext, 600);
 }
 
-/* --- AVVIO --- */
-printLines();
+startSequence();
 </script>
 
 </body>
